@@ -1,5 +1,78 @@
-header img {
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body * {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: black;
+  color: white;
+}
+
+header {
+  padding: 0.5rem;
+}
+
+header ul {
+  justify-self: end;
+  display: flex;
+  list-style: none;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+header a {
+  text-decoration: none;
+  color: white;
+  background-color: none;
+  font-size: 1.25rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.button input {
+  padding: 10px 40px 2px;
+  border: 8px;
+  border: none;
+}
+
+.button {
+  display: flex;
+  text-align: column;
+  justify-content: center;
+}
+
+.button button {
+  background-color: black;
+  color: white;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+main img {
   width: 200px;
+}
+
+.pesquisar {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.pesquisar input,
+.pesquisar button {
+  font-size: 1rem;
+  padding: 4px;
 }
 
 .library img {
