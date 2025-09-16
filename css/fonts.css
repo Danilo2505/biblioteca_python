@@ -1,0 +1,137 @@
+/* Font weights utilitários */
+b,
+strong {
+  font-weight: 700;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+small {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Citações */
+blockquote {
+  font-style: italic;
+  border-left: 4px solid #ccc;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #444;
+}
+
+cite {
+  font-style: normal;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Tamanhos base para texto */
+p,
+span,
+li,
+td,
+th {
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+/* Cabeçalhos responsivos */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.25;
+  margin: 1.5rem 0 0.5rem;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+h2 {
+  font-size: 2.25rem;
+}
+h3 {
+  font-size: 2rem;
+}
+h4 {
+  font-size: 1.75rem;
+}
+h5 {
+  font-size: 1.5rem;
+}
+h6 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+/* Responsividade: tablets */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.75rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+  }
+  h4 {
+    font-size: 1.25rem;
+  }
+  h5 {
+    font-size: 1.125rem;
+  }
+  h6 {
+    font-size: 1rem;
+  }
+
+  p,
+  span,
+  li,
+  td,
+  th {
+    font-size: 0.95rem;
+  }
+}
+
+/* Responsividade: celulares */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.25rem;
+  }
+  h4 {
+    font-size: 1.125rem;
+  }
+  h5 {
+    font-size: 1rem;
+  }
+  h6 {
+    font-size: 0.95rem;
+  }
+
+  p,
+  span,
+  li,
+  td,
+  th {
+    font-size: 0.9rem;
+  }
+
+  blockquote {
+    font-size: 0.95rem;
+    padding-left: 0.75rem;
+  }
+}
