@@ -1,0 +1,72 @@
+/* Reset básico */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos gerais */
+body {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  background-color: black;
+  color: white;
+}
+
+/* Container principal */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Botões */
+.button {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.button input {
+  padding: 10px 40px 10px 2px;
+  border: none;
+}
+
+.button button {
+  background-color: black;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.button button:hover {
+  background-color: #333;
+}
+
+/* Imagens */
+main img,
+.library img {
+  width: 200px;
+}
+
+/* Cabeçalho */
+header ul {
+  display: flex;
+  list-style: none;
+  justify-content: flex-end;
+  gap: 20px;
+  padding: 20px;
+}
+
+header a {
+  text-decoration: none;
+  /* color: rgb(164, 164, 182); */
+  color: rgb(0, 0, 0);
+  background-color: rgb(227, 208, 32);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
