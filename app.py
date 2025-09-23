@@ -45,6 +45,11 @@ def index():
     return render_template("index.html", livros=livros)
 
 
+@app.route("/adicionar.html")
+def adicionar_html():
+    return render_template("adicionar.html")
+
+
 @app.route("/adicionar", methods=["POST"])
 def adicionar():
     titulo = request.form["titulo"]

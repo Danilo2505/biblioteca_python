@@ -1,0 +1,35 @@
+/* Reset básico */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos gerais */
+body {
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  background-color: black;
+  color: white;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: rgb(20, 20, 20);
+  margin: 18px auto;
+  width: 800px;
+  padding: 12px;
+}
+
+input {
+  padding: 20px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: darkorange;
+}
