@@ -1,0 +1,9 @@
+.login {
+  display: flex;
+  flex-direction: column;
+}
+
+.label > * {
+  height: fit-content;
+  width: fit-content;
+}

@@ -67,6 +67,11 @@ def adicionar():
     return redirect(url_for("index"))
 
 
+@app.route("/login.html")
+def login_html():
+    return render_template("login.html")
+
+
 # Você pode adicionar rotas para editar, deletar e buscar também
 
 if __name__ == "__main__":
