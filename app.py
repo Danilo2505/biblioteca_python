@@ -1,32 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
-import os
+
 
 app = Flask(__name__)
-
-"""
-STATIC_FILE_DIRECTORY = "static"
-
-# Serve os arquivos estáticos
-@app.route("/static/<path:filename>")
-def serve_specific_file(filename):
-    return send_from_directory(STATIC_FILE_DIRECTORY, filename)
-"""
-
-# ----- Auxiliares -----
-
-
-def limpar_terminal(aguardar: bool = False):
-    """
-    Limpa o terminal.
-    Se aguardar=True, o terminal só limpa depois do usuário pressionar ENTER.
-    """
-
-    if aguardar:
-        input("\nPressione ENTER para continuar...")
-
-    # Windows usa "cls", Linux/mac usa "clear"
-    os.system("cls" if os.name == "nt" else "clear")
 
 
 # ----- Banco de Dados -----
@@ -138,56 +114,6 @@ def excluir_livro(id_livro):
     print("Livro Excluído com Sucesso!!!")
 
 
-def menu():
-    limpar_terminal(aguardar=False)
-    while True:
-        print("--- Sistema Biblioteca ---")
-        print("1 - Adicionar")
-        print("2 - Listar Livros")
-        print("3 - Atualizar Livros")
-        print("4 - Excluir Livros")
-        print("0 - Sair")
-        print("")
-
-        opcao = str(input("Escolha uma opção: "))
-
-        match opcao:
-            # Adicionar
-            case "1":
-                titulo = input("Título: ")
-                autor = input("Autor: ")
-                ano_publicacao = int(input("Ano de Publicação: "))
-
-                adicionar_livro(titulo, autor, ano_publicacao)
-            # Listar Livros
-            case "2":
-                listar_livros()
-            # Atualizar Livros
-            case "3":
-                listar_livros()
-
-                id_livro = int(input("ID do Livro: "))
-                novo_titulo = input("Novo Título: ")
-                novo_autor = input("Novo Autor: ")
-                novo_ano = int(input("Novo Ano de Publicação: "))
-
-                atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano)
-            # Excluir Livros
-            case "4":
-                listar_livros()
-
-                id_livro = int(input("ID do Livro: "))
-
-                excluir_livro(id_livro)
-            # Sair
-            case "0":
-                limpar_terminal(aguardar=False)
-                return 0
-            case _:
-                opcao = str(input("Escolha uma opção:"))
-        limpar_terminal(aguardar=True)
-
-
 def popular_db():
     # Se já tiver algum livro no Banco de Dados
     if listar_livros():
@@ -230,7 +156,229 @@ def popular_db():
     return
 
 
+# ----- Rotas -----
+# --- Páginas ---
+# Ler/Listar
+@app.route("/")
+def index():
+    # Faz uma requisição por todos os livros
+    livros = listar_livros()
+
+    return render_template("index.html", livros=livros)
+
+
+# Criar
+@app.route("/adicionar.html")
+def adicionar_html():
+
+    # Faz uma requisição por todos os bimestres
+    bimestres = query_db(
+        """
+        SELECT 
+            bimestres.id_bimestre, 
+            bimestres.nome
+        FROM bimestres
+        ORDER BY bimestres.nome;"""
+    )
+
+    # Faz uma requisição por todas as disciplinas
+    disciplinas = query_db(
+        """
+        SELECT 
+            disciplinas.id_disciplina, 
+            disciplinas.nome
+        FROM disciplinas
+        ORDER BY disciplinas.nome;"""
+    )
+
+    # Faz uma requisição por todas as salas
+    salas = query_db(
+        """
+        SELECT 
+            salas.id_sala, 
+            salas.nome
+        FROM salas
+        ORDER BY salas.nome;"""
+    )
+
+    # Faz uma requisição por todas as notas
+    notas = query_db(
+        """
+        SELECT 
+            notas.id_nota, 
+            notas.valor, 
+            -- Cria aliases
+            alunos.nome AS nome_aluno,
+            disciplinas.nome AS nome_disciplina,
+            bimestres.nome AS nome_bimestre
+        FROM notas
+        -- Une notas.id_aluno, notas.id_disciplina e notas.id_bimestre
+        JOIN alunos ON notas.id_aluno = alunos.id_aluno
+        JOIN disciplinas ON notas.id_disciplina = disciplinas.id_disciplina
+        JOIN bimestres ON notas.id_bimestre = bimestres.id_bimestre
+        ORDER BY notas.id_nota;"""
+    )
+
+    return render_template(
+        "adicionar.html",
+        bimestres=bimestres,
+        disciplinas=disciplinas,
+        salas=salas,
+        notas=notas,
+    )
+
+
+# Excluir
+@app.route("/excluir.html")
+def excluir_html():
+    # Faz uma requisição por todos os bimestres
+    bimestres = query_db(
+        """
+        SELECT 
+            bimestres.id_bimestre, 
+            bimestres.nome
+        FROM bimestres
+        ORDER BY bimestres.nome;"""
+    )
+
+    # Faz uma requisição por todas as disciplinas
+    disciplinas = query_db(
+        """
+        SELECT 
+            disciplinas.id_disciplina, 
+            disciplinas.nome
+        FROM disciplinas
+        ORDER BY disciplinas.nome;"""
+    )
+
+    # Faz uma requisição por todas as salas
+    salas = query_db(
+        """
+        SELECT 
+            salas.id_sala, 
+            salas.nome
+        FROM salas
+        ORDER BY salas.nome;"""
+    )
+
+    # Faz uma requisição por todos os alunos
+    alunos = query_db(
+        """
+        SELECT 
+            alunos.id_aluno, 
+            alunos.nome, 
+            salas.nome AS nome_sala -- Cria um alias
+        FROM alunos
+        -- Une alunos.id_sala a salas.id_sala
+        JOIN salas ON alunos.id_sala = salas.id_sala
+        ORDER BY salas.nome;"""
+    )
+
+    # Faz uma requisição por todas as notas
+    notas = query_db(
+        """
+        SELECT 
+            notas.id_nota, 
+            notas.valor, 
+            -- Cria aliases
+            alunos.nome AS nome_aluno,
+            disciplinas.nome AS nome_disciplina,
+            bimestres.nome AS nome_bimestre
+        FROM notas
+        -- Une notas.id_aluno, notas.id_disciplina e notas.id_bimestre
+        JOIN alunos ON notas.id_aluno = alunos.id_aluno
+        JOIN disciplinas ON notas.id_disciplina = disciplinas.id_disciplina
+        JOIN bimestres ON notas.id_bimestre = bimestres.id_bimestre
+        ORDER BY alunos.nome;"""
+    )
+
+    return render_template(
+        "excluir.html",
+        bimestres=bimestres,
+        disciplinas=disciplinas,
+        salas=salas,
+        alunos=alunos,
+        notas=notas,
+    )
+
+
+# Atualizar
+@app.route("/atualizar.html")
+def atualizar_html():
+
+    # Faz uma requisição por todos os bimestres
+    bimestres = query_db(
+        """
+        SELECT 
+            bimestres.id_bimestre, 
+            bimestres.nome
+        FROM bimestres
+        ORDER BY bimestres.nome;"""
+    )
+
+    # Faz uma requisição por todas as disciplinas
+    disciplinas = query_db(
+        """
+        SELECT 
+            disciplinas.id_disciplina, 
+            disciplinas.nome
+        FROM disciplinas
+        ORDER BY disciplinas.nome;"""
+    )
+
+    # Faz uma requisição por todas as salas
+    salas = query_db(
+        """
+        SELECT 
+            salas.id_sala, 
+            salas.nome
+        FROM salas
+        ORDER BY salas.nome;"""
+    )
+
+    # Faz uma requisição por todos os alunos
+    alunos = query_db(
+        """
+        SELECT 
+            alunos.id_aluno, 
+            alunos.nome, 
+            salas.nome AS nome_sala -- Cria um alias
+        FROM alunos
+        -- Une alunos.id_sala a salas.id_sala
+        JOIN salas ON alunos.id_sala = salas.id_sala
+        ORDER BY salas.nome;"""
+    )
+
+    # Faz uma requisição por todas as notas
+    notas = query_db(
+        """
+        SELECT 
+            notas.id_nota, 
+            notas.valor, 
+            -- Cria aliases
+            alunos.nome AS nome_aluno,
+            disciplinas.nome AS nome_disciplina,
+            bimestres.nome AS nome_bimestre
+        FROM notas
+        -- Une notas.id_aluno, notas.id_disciplina e notas.id_bimestre
+        JOIN alunos ON notas.id_aluno = alunos.id_aluno
+        JOIN disciplinas ON notas.id_disciplina = disciplinas.id_disciplina
+        JOIN bimestres ON notas.id_bimestre = bimestres.id_bimestre
+        ORDER BY alunos.nome;"""
+    )
+
+    return render_template(
+        "atualizar.html",
+        bimestres=bimestres,
+        disciplinas=disciplinas,
+        salas=salas,
+        alunos=alunos,
+        notas=notas,
+    )
+
+
 if __name__ == "__main__":
-    inicializar_banco_de_dados()
-    popular_db()
-    menu()
+    with app.app_context():
+        inicializar_banco_de_dados()
+        popular_db()
+    app.run(host="0.0.0.0", debug=True)
