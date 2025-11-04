@@ -1,8 +1,27 @@
 from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
+import os
 
 
 app = Flask(__name__)
+HOST = "0.0.0.0"
+PORT = 5000
+
+
+# ----- Auxiliares -----
+
+
+def limpar_terminal(aguardar: bool = False):
+    """
+    Limpa o terminal.
+    Se aguardar=True, o terminal só limpa depois do usuário pressionar ENTER.
+    """
+
+    if aguardar:
+        input("\nPressione ENTER para continuar...")
+
+    # Windows usa "cls", Linux/mac usa "clear"
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 # ----- Banco de Dados -----
@@ -10,21 +29,25 @@ app = Flask(__name__)
 
 def inicializar_banco_de_dados():
     # 1) Conecta sem o parâmetro "database"
+    print('''1) Conecta sem o parâmetro "database"''')
     conexao = mysql.connector.connect(host="localhost", user="root", password="")
-    cursor = conexao.cursor()
+    cursor = conexao.cursor(dictionary=True)
 
     # 2) Cria o banco de dados se não existir
+    print("""2) Cria o banco de dados se não existir""")
     cursor.execute("CREATE DATABASE IF NOT EXISTS biblioteca_python")
     cursor.execute("USE biblioteca_python")
 
     # 3) Cria a tabela se não existir
+    print("""3) Cria a tabela se não existir""")
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS livros (
             id INT AUTO_INCREMENT PRIMARY KEY,
             titulo VARCHAR(100) NOT NULL,
             autor VARCHAR(100) NOT NULL,
-            ano_publicacao INT
+            ano_publicacao INT,
+            src_imagem VARCHAR(2000) NOT NULL
         )
     """
     )
@@ -44,12 +67,12 @@ def conectar():
 
 
 # --- Criar ---
-def adicionar_livro(titulo: str, autor: str, ano_publicacao: int):
+def adicionar_livro(titulo: str, autor: str, ano_publicacao: int, src_imagem: str):
     conexao = conectar()
-    cursor = conexao.cursor()
+    cursor = conexao.cursor(dictionary=True)
 
-    sql = f"INSERT INTO livros(titulo, autor, ano_publicacao) VALUES (%s, %s, %s)"
-    valores = (titulo, autor, ano_publicacao)
+    sql = f"INSERT INTO livros(titulo, autor, ano_publicacao, src_imagem) VALUES (%s, %s, %s, %s)"
+    valores = (titulo, autor, ano_publicacao, src_imagem)
 
     cursor.execute(sql, valores)
     conexao.commit()
@@ -61,24 +84,14 @@ def adicionar_livro(titulo: str, autor: str, ano_publicacao: int):
 # --- Ler/Listar ---
 def listar_livros():
     conexao = conectar()
-    cursor = conexao.cursor()
+    cursor = conexao.cursor(dictionary=True)
 
     cursor.execute("SELECT * from livros")
     livros = cursor.fetchall()  # Pega todos os resultados
     conexao.close()
 
     if livros:
-        print("Lista de livros:")
-        """
-        for livro in livros:
-            print(f"ID: {livro[0]} | Título: {livro[1]} | Autor: {livro[2]} | Ano de Publicação: {livro[3]}")
-        """
-        for livro in livros:
-            print(f"----- Livro de ID {livro[0]} -----")
-            print(f"- Título: {livro[1]}")
-            print(f"- Autor: {livro[2]}")
-            print(f"- Ano de Publicação: {livro[3]}")
-            print("")
+        print("Livro encontrado!")
     else:
         print("Nenhum livro encontrado!")
 
@@ -88,7 +101,7 @@ def listar_livros():
 # --- Atualizar ---
 def atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano):
     conexao = conectar()
-    cursor = conexao.cursor()
+    cursor = conexao.cursor(dictionary=True)
 
     sql = """
     UPDATE livros
@@ -105,7 +118,7 @@ def atualizar_livros(id_livro, novo_titulo, novo_autor, novo_ano):
 # --- Excluir ---
 def excluir_livro(id_livro):
     conexao = conectar()
-    cursor = conexao.cursor()
+    cursor = conexao.cursor(dictionary=True)
 
     cursor.execute("DELETE FROM livros WHERE id = %s", (id_livro,))
     conexao.commit()
@@ -121,39 +134,81 @@ def popular_db():
         return
 
     livros = [
-        ("Sherlock Holmes: Um Estudo em Vermelho", "Sir Arthur Conan Doyle", 1887),
-        ("Dom Casmurro", "Machado de Assis", 1899),
-        ("1984", "George Orwell", 1949),
-        ("O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", 1954),
-        ("O Pequeno Príncipe", "Antoine de Saint-Exupéry", 1943),
-        ("Cem Anos de Solidão", "Gabriel García Márquez", 1967),
-        ("Orgulho e Preconceito", "Jane Austen", 1813),
-        ("A Revolução dos Bichos", "George Orwell", 1945),
-        ("O Hobbit", "J.R.R. Tolkien", 1937),
-        ("A Metamorfose", "Franz Kafka", 1915),
-        ("O Alquimista", "Paulo Coelho", 1988),
-        ("Harry Potter e a Pedra Filosofal", "J.K. Rowling", 1997),
-        ("O Código Da Vinci", "Dan Brown", 2003),
         (
-            "As Crônicas de Nárnia: O Leão, a Feiticeira e o Guarda-Roupa",
-            "C.S. Lewis",
-            1950,
+            "Sherlock Holmes: Um Estudo em Vermelho",
+            "Sir Arthur Conan Doyle",
+            1887,
+            "https://m.media-amazon.com/images/I/61GFsO7j0ZL._AC_UF1000,1000_QL80_.jpg",
         ),
-        ("A Menina que Roubava Livros", "Markus Zusak", 2005),
-        ("Moby Dick", "Herman Melville", 1851),
-        ("O Morro dos Ventos Uivantes", "Emily Brontë", 1847),
-        ("O Conde de Monte Cristo", "Alexandre Dumas", 1844),
-        ("It: A Coisa", "Stephen King", 1986),
-        ("Neuromancer", "William Gibson", 1984),
+        (
+            "Dom Casmurro",
+            "Machado de Assis",
+            1899,
+            "https://m.media-amazon.com/images/I/61x1ZHomWUL.jpg",
+        ),
+        (
+            "1984",
+            "George Orwell",
+            1949,
+            "https://m.media-amazon.com/images/I/61t0bwt1s3L._AC_UF1000,1000_QL80_.jpg",
+        ),
+        (
+            "O Senhor dos Anéis: A Sociedade do Anel",
+            "J.R.R. Tolkien",
+            1954,
+            "https://m.media-amazon.com/images/I/81hCVEC0ExL.jpg",
+        ),
+        (
+            "O Pequeno Príncipe",
+            "Antoine de Saint-Exupéry",
+            1943,
+            "https://m.media-amazon.com/images/I/81SVIwe5L9L._UF1000,1000_QL80_.jpg",
+        ),
+        (
+            "Cem Anos de Solidão",
+            "Gabriel García Márquez",
+            1967,
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1ofwq-sF2P4IN0_3uKa0hPRMY-4wzKYcqwQ&s",
+        ),
+        (
+            "Orgulho e Preconceito",
+            "Jane Austen",
+            1813,
+            "https://m.media-amazon.com/images/I/719esIW3D7L.jpg",
+        ),
+        (
+            "A Revolução dos Bichos",
+            "George Orwell",
+            1945,
+            "https://image.isu.pub/240308195141-ea3bec1fe1822568527e6b862a841023/jpg/page_1_social_preview.jpg",
+        ),
+        (
+            "O Hobbit",
+            "J.R.R. Tolkien",
+            1937,
+            "https://harpercollins.com.br/cdn/shop/files/9788595086081_1200x1200.jpg?v=1754636796",
+        ),
+        (
+            "A Metamorfose",
+            "Franz Kafka",
+            1915,
+            "https://d1b6q258gtjyuy.cloudfront.net/Custom/Content/Products/07/49/0749_https-www-escala-com-br-a-metamorfose-franz-kafka-p2036-_z1_637957496052979369.webp",
+        ),
+        ("O Alquimista", "Paulo Coelho", 1988, "alquimista.jpg"),
+        ("Harry Potter e a Pedra Filosofal", "J.K. Rowling", 1997, "harry_potter1.jpg"),
+        (
+            "O Código Da Vinci",
+            "Dan Brown",
+            2003,
+            "https://upload.wikimedia.org/wikipedia/pt/6/6b/DaVinciCode.jpg",
+        ),
     ]
 
-    for titulo, autor, ano in livros:
-        adicionar_livro(titulo, autor, ano)
+    for titulo, autor, ano, src_imagem in livros:
+        adicionar_livro(titulo, autor, ano, src_imagem)
 
-    print("Banco de dados populado com sucesso!")
+    print("✅ Banco de dados populado com sucesso!")
     listar_livros()
-
-    return
 
 
 # ----- Rotas -----
@@ -379,6 +434,9 @@ def atualizar_html():
 
 if __name__ == "__main__":
     with app.app_context():
+        limpar_terminal()
+        print("----- Inicializando Banco de Dados -----")
         inicializar_banco_de_dados()
+        print("----- Populando Banco de Dados -----")
         popular_db()
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host=HOST, port=PORT, debug=True)

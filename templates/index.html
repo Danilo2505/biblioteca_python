@@ -30,24 +30,17 @@
           <input type="search" placeholder="Qual o livro?" />
           <button type="submit">Pesquisar</button>
         </div>
-        <div class="library">
-          <h2>Recentes</h2>
-          <img
-            src="https://cdn.awsli.com.br/2500x2500/2551/2551876/produto/243441735b1007b6d94.jpg"
-            alt=""
-          />
-          <img
-            src="https://cdn.awsli.com.br/2500x2500/2551/2551876/produto/243441735b1007b6d94.jpg"
-            alt=""
-          />
-          <img
-            src="https://cdn.awsli.com.br/2500x2500/2551/2551876/produto/243441735b1007b6d94.jpg"
-            alt=""
-          />
-          <img
-            src="https://cdn.awsli.com.br/2500x2500/2551/2551876/produto/243441735b1007b6d94.jpg"
-            alt=""
-          />
+        <div class="div-livros">
+          {% for livro in livros %}
+          <div class="div-item-livro">
+            <img src="{{ livro.src_imagem }}" alt="" />
+            <div class="div-livro-info">
+              <p class="p-livro-info-ano">{{ livro.ano_publicacao }}</p>
+              <p class="p-livro-info-titulo">{{ livro.titulo }}</p>
+              <p class="p-livro-info-autor">{{ livro.autor }}</p>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </main>
