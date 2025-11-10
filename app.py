@@ -194,8 +194,18 @@ def popular_db():
             1915,
             "https://d1b6q258gtjyuy.cloudfront.net/Custom/Content/Products/07/49/0749_https-www-escala-com-br-a-metamorfose-franz-kafka-p2036-_z1_637957496052979369.webp",
         ),
-        ("O Alquimista", "Paulo Coelho", 1988, "alquimista.jpg"),
-        ("Harry Potter e a Pedra Filosofal", "J.K. Rowling", 1997, "harry_potter1.jpg"),
+        (
+            "O Alquimista",
+            "Paulo Coelho",
+            1988,
+            "https://m.media-amazon.com/images/I/81slUinjTlS._SL1500_.jpg",
+        ),
+        (
+            "Harry Potter e a Pedra Filosofal",
+            "J.K. Rowling",
+            1997,
+            "https://m.media-amazon.com/images/I/81ibfYk4qmL._SL1500_.jpg",
+        ),
         (
             "O Código Da Vinci",
             "Dan Brown",

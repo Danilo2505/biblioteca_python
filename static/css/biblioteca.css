@@ -73,6 +73,7 @@ header a {
 /* Livros */
 .div-livros {
   max-width: 100%;
+  height: 300px;
   display: flex;
   flex-direction: row;
   gap: 1rem;
@@ -81,24 +82,26 @@ header a {
 
 .div-item-livro {
   position: relative;
-  height: fit-content;
+  height: 100%;
+  aspect-ratio: 2 / 3;
 }
 
-.div-livro-info {
-  /* display: none; */
+.div-item-livro img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.div-item-livro .div-livro-info {
+  display: none;
   position: absolute;
   width: 100%;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
+  padding: 0.5rem;
 }
 
-.div-item-livro img {
-  width: auto;
-  max-height: 300px;
-}
-
+/* Mostra as informações do livro quando há um hover na capa */
 .div-item-livro:hover .div-livro-info {
   display: flex;
   flex-direction: column;
